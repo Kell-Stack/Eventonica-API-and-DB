@@ -19,42 +19,6 @@ var pool = new Pool({
 const PORT = process.env.PORT || 3000
 app.listen(PORT, console.log(`Server is actually in port ${PORT}`))
 
-
-// - - - - - - - - - - - - - - - - - - - - DATA - - - - - - - -  - - - - - - - - - - 
-
-let data = [{
-        id: "222",
-        name: "TALKtonica",
-        city: "San Francisco",
-        state: "CA",
-        description: ""
-    },
-
-    {
-        id: "333",
-        name: "Techtonic-palooza",
-        city: "Chicago",
-        state: "IL",
-        description: ""
-    },
-
-    {
-        id: "444",
-        name: "TechtoniCON",
-        city: "New York",
-        state: "NY",
-        description: "Connect with recruiters all our partnering companies and check in with alumni and life post Techtonica"
-    },
-
-    {
-        id: "555",
-        name: "T&T: Tech & Tonic",
-        city: "Miami",
-        state: "FL",
-        description: "A fireside chat followed by networking happy hour"
-    },
-]
-
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ create your routes ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // ###################################### GET ######################################
@@ -80,16 +44,16 @@ app.get('/events/:id', async (req, res) => {
     ]);
     res.json(found.rows[0]);
     client.release();
-});
-    // if (found) res.json(found);
-    // //if someone searches for id #455 and there isan id with that number then that id will be displayed
-    // else res.status(404).send("SORRY (i aint sorry)ID NOT FOUND");
+}); 
+        
+// if (found) res.json(found);
+// else res.status(404).send("SORRY (i aint sorry)ID NOT FOUND");
 
 
 // ###################################### POST ######################################
 
 app.post('/events', async (req, res) => {
-const client = await pool.connect();('INSERT INTO events(name) VALUES($1) RETURNING *',[req.body.name]);
+const client = await pool.connect();('INSERT INTO events (name,city,state,description) VALUES($1) RETURNING *',[req.body.name]);
 await client.release();
 res.json(newEvents.row[0])
 })
