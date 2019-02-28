@@ -5,7 +5,7 @@ const app = express()
 app.use(express.json());
 
 
-// from node-postgress.com
+// from node-postgres.com/features/connecting
 const {
     Pool
 } = require('pg')
@@ -44,8 +44,8 @@ app.get('/events/:id', async (req, res) => {
     ]);
     res.json(found.rows[0]);
     client.release();
-}); 
-        
+});
+
 // if (found) res.json(found);
 // else res.status(404).send("SORRY (i aint sorry)ID NOT FOUND");
 
@@ -53,33 +53,43 @@ app.get('/events/:id', async (req, res) => {
 // ###################################### POST ######################################
 
 app.post('/events', async (req, res) => {
-const client = await pool.connect();('INSERT INTO events (name,city,state,description) VALUES($1) RETURNING *',[req.body.name]);
-await client.release();
-res.json(newEvents.row[0])
+    const client = await pool.connect();
+    console.log("hey", req, "hey hey");
+    await client.query('INSERT INTO events(name,city,state,description) VALUES($1, $2, $3, $4) RETURNING *', [req.body.name, req.body.city, req.body.state, req.body.description]);
+
+    await client.release();
+    res.json([req.body])
 })
 
 
 // ###################################### PUT ######################################
 app.put('/events/:id', async (req, res) => {
     // res.send("Put TEST from /events/")
-    var oldEvent = data.find(function (eventsFunc) {
+    const client = await pool.connect();
+    console.log("will they", req)
+    var oldEvent = client.query(function (eventsFunc) {
         return req.params.id == eventsFunc.id;
     });
-    oldEvent.name = req.body.name;
-    oldEvent.city = req.body.city;
-    oldEvent.state = req.body.state;
-    oldEvent.description = req.body.description;
-    res.json(data);
+
+    oldEvent.name = req.params.name;
+    oldEvent.city = req.params.city;
+    oldEvent.state = req.params.state;
+    oldEvent.description = req.params.description;
+    res.json(oldEvent);
+
+    var found = await client.query('SELECT * FROM events WHERE id=$1', [
+        req.params.id
+    ]);
+    await client.query('UPDATE events SET name = ($1),city = ($2),state = ($3),description = ($4) WHERE id = ($5)', [req.body.name, req.body.city, req.body.state, req.body.description, req.params.id]);
+
+
 });
 
-// ###################################### PUT ######################################
+// ###################################### DELETE ######################################
 app.delete('/events/:id', async (req, res) => {
     // res.send("DELETEEEEEEEEE TEST from /events/")
-    let oldEvent = data.find(function (event) {
-        return req.params.id === event.id
-    });
-    var locateIDtoDel = data.indexOf(oldEvent)
-    data.splice(locateIDtoDel, 1)
-    res.json(data);
-
+    const client = await pool.connect();
+    const delEv = await client.query('DELETE FROM events WHERE id=($1)', [req.params.id]);
+    await client.release();
+    res.json(delEv.rows);
 });
