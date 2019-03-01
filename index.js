@@ -66,7 +66,6 @@ app.post('/events', async (req, res) => {
 app.put('/events/:id', async (req, res) => {
     // res.send("Put TEST from /events/")
     const client = await pool.connect();
-    console.log("will they", req)
     var oldEvent = client.query(function (eventsFunc) {
         return req.params.id == eventsFunc.id;
     });
