@@ -16,8 +16,8 @@ var pool = new Pool({
 
 
 //run node index.js and you should be connected to server (POSTMAN)
-const PORT = process.env.PORT || 3000
-app.listen(PORT, console.log(`Server is actually in port ${PORT}`))
+const PORT = process.env.PORT || 3006
+app.listen(PORT, console.log(`Server is deadass in port ${PORT}`))
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ create your routes ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
